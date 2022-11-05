@@ -9,7 +9,7 @@ module.exports = {
         assetModuleFilename: 'assets/images/[name]-[hash][ext]',
     },
     devServer: {
-        port: 5000,
+        port: 3000,
         static: './public',
         hot: true,
     },

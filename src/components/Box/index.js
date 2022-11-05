@@ -9,8 +9,11 @@ export const Box = (params) => {
         });
     }
 
+    if (className) {
+        box.classList.add(className);
+    }
+
     box.style.width = `${width}px`;
-    box.classList.add(className);
 
     return box;
 };

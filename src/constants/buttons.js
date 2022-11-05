@@ -21,11 +21,11 @@ export const BUTTONS = [
         value: OPERATIONS.DIVIDE_BY_ONE,
     },
     {
-        type: BUTTON_TYPE.OPERATION,
+        type: BUTTON_TYPE.DISPLAY_HELPER,
         value: OPERATIONS.CE,
     },
     {
-        type: BUTTON_TYPE.OPERATION,
+        type: BUTTON_TYPE.DISPLAY_HELPER,
         value: OPERATIONS.CLEAR,
     },
     {

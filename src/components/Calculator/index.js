@@ -14,15 +14,19 @@ export class Calculator extends Display {
         super(params);
         const { width, buttons, countOfColumns, buttonSize = {} } = params;
 
+        this.state = {
+            secondOperand: '',
+            firstOperand: '',
+            result: 0,
+            operation: null,
+            lastActionType: null,
+        };
+
         this.buttonSize = buttonSize;
         this.buttons = buttons;
         this.countOfColumns = countOfColumns;
         this.width = width;
-        this.firstOperand = '';
-        this.secondOperand = '';
-        this.result = 0;
-        this.operation = null;
-        this.lastActionType = null;
+
         this.$calculator = Box({
             className: 'calculator',
             width,
@@ -31,91 +35,118 @@ export class Calculator extends Display {
         this.onClickButton = this.onClickButton.bind(this);
     }
 
-    logLastAction(value) {
-        this.lastActionType = value;
-    }
+    setState(data, callBack) {
+        this.state = {
+            ...this.state,
+            ...data,
+        };
 
-    updateResult(value) {
-        this.result = value;
-    }
-
-    updateOperation(value) {
-        this.operation = value;
-    }
-
-    updateFirstOperand(value) {
-        this.firstOperand = value;
-    }
-
-    updateSecondOperand(value) {
-        this.secondOperand = value;
+        if (callBack) {
+            callBack();
+        }
     }
 
     clear() {
-        this.firstOperand = '';
-        this.secondOperand = '';
-        this.result = 0;
-        this.operation = null;
-        this.lastActionType = null;
+        this.setState({
+            secondOperand: '',
+            firstOperand: '',
+            result: 0,
+            operation: null,
+            lastActionType: null,
+        }, () => {
+            this.updateDisplay(0);
+        });
     }
 
-    getResult(firstOperand, secondOperand) {
-        firstOperand = this.result ? this.result : firstOperand;
+    calculate(firstOperand, secondOperand) {
+        const {
+            result,
+            operation,
+        } = this.state;
+        firstOperand = result ? result : firstOperand;
 
-        this.result = firstOperand ? parseFloat(firstOperand) : 0;
+        this.setState({
+            result: firstOperand ? parseFloat(firstOperand) : 0,
+        });
         secondOperand = secondOperand ? parseFloat(secondOperand) : 0;
 
-        switch (this.operation) {
+        switch (operation) {
             case OPERATIONS.PLUS:
-                this.result += secondOperand;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: this.state.result + secondOperand,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.MINUS:
-                this.result -= secondOperand;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: this.state.result - secondOperand,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.MULTIPLE:
-                this.result *= secondOperand;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: this.state.result * secondOperand,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.DIVIDE:
-                this.result /= secondOperand;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: this.state.result / secondOperand,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.PERCENT:
-                this.result = secondOperand / 100;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: secondOperand / 100,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.SQRT:
-                this.result = Math.sqrt(secondOperand);
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: Math.sqrt(secondOperand),
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.SQUARE:
-                this.result = Math.pow(secondOperand, 2);
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: Math.pow(secondOperand, 2),
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.DIVIDE_BY_ONE:
-                this.result = 1 / secondOperand;
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    result: 1 / secondOperand,
+                }, () => {
+                    this.updateDisplay(this.state.result);
+                });
 
                 return this.displayValue;
             case OPERATIONS.CE:
-                this.updateSecondOperand(0);
-                this.updateDisplayValue(this.result);
+                this.setState({
+                    secondOperand: 0,
+                }, () => {
+                    this.updateDisplay(0);
+                });
 
                 return;
             case OPERATIONS.CLEAR:
                 this.clear();
-                this.updateDisplayValue('');
 
-                return '';
+                return;
             case OPERATIONS.BACKSPACE:
                 return this.makeBackSpace();
             default:
@@ -126,59 +157,74 @@ export class Calculator extends Display {
     onClickButton(event) {
         switch (event.target.dataset.type) {
             case BUTTON_TYPE.NUMBER: {
-                if (this.lastActionType === BUTTON_TYPE.OPERATION && this.result) {
-                    this.updateFirstOperand(this.result);
-                    this.updateResult('');
+                const {
+                    secondOperand,
+                    result,
+                    firstOperand,
+                    lastActionType,
+                    operation,
+                } = this.state;
 
-                    const value = `${event.target.dataset.value}`;
-
-                    this.updateSecondOperand(value);
-                    this.updateDisplay(this.secondOperand);
+                if (lastActionType === BUTTON_TYPE.OPERATION && result) {
+                    this.setState({
+                        firstOperand: result,
+                        result: '',
+                        secondOperand: `${event.target.dataset.value}`,
+                    }, () => {
+                        this.updateDisplay(this.state.secondOperand);
+                    });
 
                     return;
                 }
 
-                if (this.operation) {
-                    const value = `${this.secondOperand}${event.target.dataset.value}`;
-
-                    this.updateSecondOperand(value);
-                    this.updateDisplay(this.secondOperand);
+                if (operation) {
+                    this.setState({
+                        secondOperand: `${secondOperand}${event.target.dataset.value}`,
+                    }, () => {
+                        this.updateDisplay(this.state.secondOperand);
+                    });
 
                     return;
                 }
 
-                const value = `${this.firstOperand}${event.target.dataset.value}`;
-
-                this.updateFirstOperand(value);
-                this.updateDisplay(this.firstOperand);
-
-                this.logLastAction(BUTTON_TYPE.NUMBER);
+                this.setState({
+                    firstOperand: `${firstOperand}${event.target.dataset.value}`,
+                    lastActionType: BUTTON_TYPE.NUMBER,
+                }, () => {
+                    this.updateDisplay(this.state.firstOperand);
+                });
 
                 return;
             }
             case BUTTON_TYPE.DISPLAY_HELPER: {
-                this.updateOperation(event.target.dataset.value);
+                this.setState({
+                    operation: event.target.dataset.value,
+                });
 
-                const result = this.getResult();
-
-                this.updateDisplay(result);
+                this.calculate();
 
                 return;
             }
             case BUTTON_TYPE.OPERATION: {
+                const {
+                    result,
+                    firstOperand,
+                    operation,
+                    secondOperand,
+                } = this.state;
+
                 if (event.target.dataset.value === OPERATIONS.RESULT) {
-                    const firstOperand =
-                        this.operation === OPERATIONS.RESULT ? this.result : this.firstOperand;
+                    const _firstOperand = operation === OPERATIONS.RESULT ? result : firstOperand;
 
-                    const result = this.getResult(firstOperand, this.secondOperand);
-
-                    this.updateDisplay(result);
+                    this.calculate(_firstOperand, secondOperand);
 
                     return;
                 }
 
-                this.logLastAction(BUTTON_TYPE.OPERATION);
-                this.updateOperation(event.target.dataset.value);
+                this.setState({
+                    lastActionType: BUTTON_TYPE.OPERATION,
+                    operation: event.target.dataset.value,
+                });
 
                 return;
             }
