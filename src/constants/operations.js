@@ -1,0 +1,16 @@
+export const OPERATIONS = {
+    PERCENT: '%',
+    SQRT: '√',
+    SQUARE: 'x²',
+    DIVIDE_BY_ONE: '1/x',
+    CE: 'CE',
+    CLEAR: 'C',
+    BACKSPACE: '⌫',
+    DIVIDE: '/',
+    PLUS: '+',
+    PLUS_MINUS: '±',
+    POINT: '.',
+    RESULT: '=',
+    MINUS: '-',
+    MULTIPLE: '*',
+};

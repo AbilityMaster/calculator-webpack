@@ -1,0 +1,41 @@
+{
+    "name": "calculator-webpack",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack serve --hot --open",
+        "build": "webpack -c webpack.config.js",
+        "build-prod": "webpack -c webpack.config.prod.js",
+        "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\"",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "css-loader": "^6.7.1",
+        "eslint": "^8.26.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-import-resolver-webpack": "^0.13.2",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "mini-css-extract-plugin": "^2.6.1",
+        "node-sass": "^7.0.3",
+        "prettier": "^2.7.1",
+        "sass": "^1.56.0",
+        "sass-loader": "^12.6.0",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0",
+        "webpack-dev-server": "^4.11.1"
+    },
+    "dependencies": {},
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx,json}": [
+            "eslint --fix"
+        ],
+        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+            "prettier --write"
+        ]
+    }
+}
